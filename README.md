@@ -1,2 +1,8 @@
-# relax-arcade-tournament-extension
-Extension tournoi complète pour Relax Arcade 1.0.28 avec support simple élimination, double élimination et classement/ligue
+node_modules
+/dist
+/data/*.db
+npm-debug.log*
+.DS_Store
+coverage
+npm-cache
+*.log

@@ -1,0 +1,45 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { TournamentEngine } from '../src/tournament/TournamentEngine.js';
+
+test('single elimination creates bracket for 4 players', () => {
+  const players = [
+    { id: 'p1', name: 'Alice' },
+    { id: 'p2', name: 'Bob' },
+    { id: 'p3', name: 'Charlie' },
+    { id: 'p4', name: 'David' }
+  ];
+
+  const matches = TournamentEngine.createSimpleEliminationBracket(players);
+  assert.equal(matches.length, 2);
+  assert.equal(matches[0].stage, 'winner-bracket');
+});
+
+test('league standings update correctly', () => {
+  const standings = [
+    { playerId: 'a', points: 0, wins: 0, losses: 0, matchesPlayed: 0 },
+    { playerId: 'b', points: 0, wins: 0, losses: 0, matchesPlayed: 0 }
+  ];
+
+  const next = TournamentEngine.applyLeagueResult(standings, 'a', 'b', {
+    winPoints: 3,
+    lossPoints: 0,
+    allowDraws: false
+  });
+
+  assert.equal(next[0].points, 3);
+  assert.equal(next[0].wins, 1);
+  assert.equal(next[1].losses, 1);
+});
+
+test('double elimination creates the required bracket entries', () => {
+  const players = [
+    { id: 'p1', name: 'Alice' },
+    { id: 'p2', name: 'Bob' },
+    { id: 'p3', name: 'Charlie' },
+    { id: 'p4', name: 'David' }
+  ];
+
+  const matches = TournamentEngine.createDoubleEliminationBracket(players);
+  assert.equal(matches.length, 4);
+});

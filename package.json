@@ -1,0 +1,145 @@
+# Relax Arcade Tournament Extension
+
+Une extension tournoi complète conçue pour une intégration dans une interface Relax Arcade compatible avec la version 1.0.28. Elle fournit :
+
+- Tournoi simple élimination
+- Tournoi double élimination
+- Classement / ligue
+- Sauvegarde des données en base de données SQLite
+- Intégration dans l’écran de jeu via un overlay d’interface
+- API interne pour créer, sauvegarder et afficher les résultats de tournoi
+
+Ce projet a été construit comme une extension modulaire et exploitable dans un environnement compatible Relax Arcade, avec des objets de persistance et un moteur de tournoi prêt à brancher dans l’écran principal.
+
+## Structure du projet
+
+```text
+.
+├── README.md
+├── package.json
+├── tsconfig.json
+├── data/
+│   └── schema.sql
+├── src/
+│   ├── index.ts
+│   ├── manifest.ts
+│   ├── types.ts
+│   ├── config.ts
+│   ├── database/
+│   │   └── DatabaseService.ts
+│   ├── tournament/
+│   │   └── TournamentEngine.ts
+│   ├── ui/
+│   │   └── GameScreenIntegration.ts
+│   └── host/
+│       └── RelaxArcadeAdapter.ts
+└── tests/
+    └── tournament.test.ts
+```
+
+## Fonctionnalités incluses
+
+### 1. Simple élimination
+- Création des tours
+- Génération des matches
+- Attribution du gagnant
+- Avancement automatique dans le bracket
+
+### 2. Double élimination
+- Premier et second tour de losers
+- Règles de progression et finale
+- Gestion côté bracket et historique
+
+### 3. Classement / Ligue
+- Score par joueur
+- Points, victoires, défaites, matchs joués
+- Classement final générique
+
+### 4. Persistence en base de données
+- SQLite
+- Tables pour joueurs, tournois, matchs, résultats et score
+
+### 5. Intégration écran de jeu
+- Overlay HTML accessible depuis le contexte du jeu
+- Interface pour ouvrir, afficher et clôturer un tournoi
+
+## Installation
+
+```bash
+npm install
+npm run build
+```
+
+## Lancer le moteur de tournoi
+
+```bash
+npm run dev
+```
+
+## Exemple d’utilisation
+
+```ts
+import { RelaxArcadeTournamentExtension } from './src/index';
+
+const extension = new RelaxArcadeTournamentExtension({
+  environment: 'development',
+  databasePath: './data/relax_arcade_tournament.db',
+  appName: 'Relax Arcade',
+  version: '1.0.28'
+});
+
+await extension.start();
+
+const players = [
+  { id: 'p1', name: 'Alice', avatar: 'a.png' },
+  { id: 'p2', name: 'Bob', avatar: 'b.png' },
+  { id: 'p3', name: 'Charlie', avatar: 'c.png' },
+  { id: 'p4', name: 'David', avatar: 'd.png' }
+];
+
+const tournament = await extension.createTournament({
+  name: 'Championnat local',
+  format: 'single-elimination',
+  players,
+  rules: {
+    winPoints: 3,
+    lossPoints: 0,
+    allowDraws: false
+  }
+});
+
+console.log(tournament);
+```
+
+## Variables de configuration
+
+Le fichier `src/config.ts` expose les paramètres par défaut de l’extension :
+
+```ts
+export const defaultConfig = {
+  environment: 'development',
+  appName: 'Relax Arcade',
+  version: '1.0.28',
+  databasePath: './data/relax_arcade_tournament.db',
+  uiEnabled: true,
+  enableLeagueMode: true,
+  enableDoubleElimination: true
+};
+```
+
+## Compatibilité visée
+
+La structure a été pensée pour rester compatible avec un environnement de type Relax Arcade 1.0.28, dans lequel une extension peut :
+
+- s’enregistrer via un manifest
+- exposer des hooks d’intégration dans le menu ou l’écran de jeu
+- utiliser un service de base de données locale
+- fournir des modules d’UI de tournoi
+
+## Limites
+
+Ce dépôt est une base de développement et d’intégration modulaire. Il ne remplace pas l’API officielle d’un jeu ou d’un SDK propriétaire s’il existe dans votre environnement Relax Arcade réel. Il fournit néanmoins une implémentation complète, cohérente et testable du moteur de tournoi ainsi que du support de persistance et d’intégration visuelle.
+
+## Licence
+
+MIT
